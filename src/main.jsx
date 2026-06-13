@@ -302,7 +302,7 @@ function App() {
             <div className="brand-mark">26</div>
             <div>
               <span className="eyebrow">ÁLBUM DIGITAL</span>
-              <h1>Figuritas Mundial</h1>
+              <h1>Mundial 2026</h1>
             </div>
           </div>
 
@@ -344,12 +344,12 @@ function App() {
               type="password"
               value={password}
               onChange={(evento) => setPassword(evento.target.value)}
-              placeholder="Mínimo 6 caracteres"
+              placeholder="Elegí una contraseña"
             />
 
             <button type="submit" className="primary-btn">
               <User size={18} />
-              {modoAuth === "login" ? "Entrar" : "Crear cuenta"}
+              "Continuar"
             </button>
           </form>
 
@@ -380,7 +380,7 @@ function App() {
         <header className="topbar">
           <div className="topbar-brand">
             <span className="eyebrow">ÁLBUM DIGITAL</span>
-            <strong>Figuritas Mundial</strong>
+            <strong>Mundial 2026</strong>
           </div>
 
           <button className="ghost compact-btn" onClick={salir}>
@@ -473,7 +473,7 @@ function App() {
       <header className="topbar">
         <div className="topbar-brand">
           <span className="eyebrow">ÁLBUM DIGITAL</span>
-          <strong>Figuritas Mundial</strong>
+          <strong>Mundial 2026</strong>
         </div>
 
         <button className="ghost compact-btn" onClick={salir}>
@@ -587,3 +587,4 @@ function App() {
 }
 
 createRoot(document.getElementById("root")).render(<App />);
+

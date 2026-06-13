@@ -482,3 +482,281 @@ label {
     border-radius: 16px;
   }
 }
+
+/* ===== TEMA MUNDIAL 2026 COLORIDO ===== */
+
+body {
+  background:
+    radial-gradient(circle at 12% 8%, rgba(255, 32, 60, 0.22), transparent 26%),
+    radial-gradient(circle at 88% 12%, rgba(0, 86, 210, 0.26), transparent 28%),
+    radial-gradient(circle at 22% 90%, rgba(0, 170, 90, 0.25), transparent 30%),
+    radial-gradient(circle at 82% 86%, rgba(255, 205, 0, 0.23), transparent 25%),
+    linear-gradient(145deg, #f7fbff 0%, #e9f2ff 42%, #f7fff3 100%);
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.55;
+  background:
+    repeating-radial-gradient(circle at 10% 20%, rgba(0, 95, 210, 0.10) 0 2px, transparent 2px 18px),
+    repeating-radial-gradient(circle at 85% 80%, rgba(0, 170, 90, 0.12) 0 2px, transparent 2px 20px);
+  z-index: -1;
+}
+
+.auth-card {
+  position: relative;
+  overflow: hidden;
+  border: 0;
+  background:
+    linear-gradient(160deg, rgba(255, 255, 255, 0.95), rgba(245, 251, 255, 0.92)),
+    radial-gradient(circle at 0% 0%, rgba(239, 68, 68, 0.20), transparent 30%),
+    radial-gradient(circle at 100% 0%, rgba(15, 61, 145, 0.22), transparent 32%),
+    radial-gradient(circle at 50% 100%, rgba(14, 168, 102, 0.20), transparent 34%);
+}
+
+.auth-card::after {
+  content: "";
+  position: absolute;
+  right: -48px;
+  bottom: -48px;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background:
+    conic-gradient(
+      from 20deg,
+      #ef4444,
+      #f5c542,
+      #16c47f,
+      #0f3d91,
+      #ef4444
+    );
+  opacity: 0.22;
+}
+
+.brand-banner {
+  position: relative;
+  z-index: 1;
+}
+
+.brand-mark {
+  background:
+    conic-gradient(
+      from 210deg,
+      #ef4444,
+      #f5c542,
+      #16c47f,
+      #0f3d91,
+      #ef4444
+    );
+  color: #ffffff;
+  border: 4px solid #ffffff;
+  box-shadow:
+    0 14px 28px rgba(15, 61, 145, 0.25),
+    inset 0 0 0 2px rgba(255, 255, 255, 0.35);
+}
+
+.brand-banner h1,
+.hero-card h1,
+.section-header h2 {
+  color: transparent;
+  background: linear-gradient(90deg, #0f3d91, #16c47f, #ef4444);
+  -webkit-background-clip: text;
+  background-clip: text;
+  font-weight: 950;
+}
+
+.eyebrow {
+  color: #ef4444;
+  font-weight: 950;
+}
+
+.auth-tabs {
+  background: #edf5ff;
+  border: 1px solid #d7e7fb;
+  padding: 5px;
+  border-radius: 18px;
+}
+
+.auth-tabs button {
+  box-shadow: none;
+}
+
+.active-tab {
+  background: linear-gradient(135deg, #0f3d91, #16c47f);
+  color: #ffffff;
+}
+
+.primary-btn {
+  background:
+    linear-gradient(135deg, #0f3d91 0%, #005bd8 38%, #16c47f 100%);
+  color: #ffffff;
+  box-shadow: 0 10px 22px rgba(15, 61, 145, 0.22);
+}
+
+.primary-btn:hover {
+  filter: saturate(1.15);
+}
+
+.ghost {
+  background: #ffffff;
+  color: #0f3d91;
+  border: 1px solid #cfe2f7;
+}
+
+.hero-card {
+  position: relative;
+  overflow: hidden;
+  border: 0;
+  background:
+    radial-gradient(circle at 92% 20%, rgba(239, 68, 68, 0.16), transparent 24%),
+    radial-gradient(circle at 12% 80%, rgba(22, 196, 127, 0.20), transparent 26%),
+    linear-gradient(135deg, #ffffff, #eef7ff);
+}
+
+.hero-card::after {
+  content: "2026";
+  position: absolute;
+  right: 16px;
+  bottom: -12px;
+  font-size: 5.2rem;
+  line-height: 1;
+  font-weight: 1000;
+  color: rgba(15, 61, 145, 0.08);
+}
+
+.card {
+  border: 0;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow:
+    0 16px 36px rgba(15, 61, 145, 0.13),
+    0 0 0 1px rgba(255, 255, 255, 0.85);
+}
+
+.featured-card::before,
+.hero-card::before,
+.auth-card::before {
+  height: 10px;
+  background:
+    linear-gradient(
+      90deg,
+      #0f3d91 0%,
+      #16c47f 25%,
+      #f5c542 50%,
+      #ef4444 75%,
+      #0f3d91 100%
+    );
+}
+
+.step-badge {
+  background:
+    linear-gradient(135deg, #ef4444, #f5c542);
+  color: #ffffff;
+}
+
+.tag {
+  background: rgba(15, 61, 145, 0.10);
+  color: #0f3d91;
+}
+
+.tag.soft {
+  background: rgba(22, 196, 127, 0.14);
+  color: #078653;
+}
+
+.progress {
+  background: #e7eff9;
+}
+
+.progress-fill {
+  background:
+    linear-gradient(
+      90deg,
+      #0f3d91,
+      #16c47f,
+      #f5c542,
+      #ef4444
+    );
+}
+
+.sticker {
+  background:
+    linear-gradient(180deg, #ffffff 0%, #f0f7ff 100%);
+  border: 2px solid #d8e7f7;
+  color: #0f3d91;
+}
+
+.sticker:nth-child(4n + 1) {
+  border-color: rgba(15, 61, 145, 0.28);
+}
+
+.sticker:nth-child(4n + 2) {
+  border-color: rgba(22, 196, 127, 0.35);
+}
+
+.sticker:nth-child(4n + 3) {
+  border-color: rgba(245, 197, 66, 0.50);
+}
+
+.sticker:nth-child(4n + 4) {
+  border-color: rgba(239, 68, 68, 0.30);
+}
+
+.sticker.active {
+  background:
+    linear-gradient(135deg, #0f3d91 0%, #16c47f 100%);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 10px 20px rgba(15, 61, 145, 0.22);
+}
+
+.team-row {
+  background:
+    linear-gradient(90deg, #ffffff, #f4f9ff);
+  border: 1px solid #dceafb;
+}
+
+.team-row strong {
+  color: #0f9b61;
+}
+
+.alert-ok {
+  background: rgba(22, 196, 127, 0.14);
+  color: #08754c;
+}
+
+.alert-falta {
+  background: rgba(239, 68, 68, 0.12);
+  color: #bd1f2d;
+}
+
+.alert-warn,
+.alert-error {
+  background: rgba(245, 197, 66, 0.18);
+  color: #805400;
+}
+
+@media (max-width: 640px) {
+  .hero-card::after {
+    font-size: 4.2rem;
+    right: 10px;
+    bottom: -8px;
+  }
+
+  .brand-banner h1 {
+    font-size: 1.9rem;
+  }
+
+  .auth-tabs {
+    margin-top: 14px;
+  }
+
+  .primary-btn,
+  .ghost,
+  .active-tab {
+    min-height: 48px;
+  }
+}
