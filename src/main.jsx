@@ -11,11 +11,7 @@ import {
   XCircle,
   Trophy,
   MapPinned,
-  ClipboardCheck,
   CircleHelp,
-  Gamepad2,
-  Radio,
-  MonitorSpeaker,
   Minus,
   Plus
 } from "lucide-react";
@@ -49,40 +45,6 @@ function calcularPaginaEstimada(equipoId, numero) {
   const posicionGlobal = figuritasPrevias + Number(numero);
 
   return Math.ceil(posicionGlobal / FIGURITAS_POR_PAGINA);
-}
-
-function GuiaUso() {
-  const pasos = [
-    {
-      icono: <Gamepad2 size={20} />,
-      titulo: "1. Cargá",
-      texto: "Tocá las que ya tenés."
-    },
-    {
-      icono: <MonitorSpeaker size={20} />,
-      titulo: "2. Consultá",
-      texto: "Elegí equipo y número."
-    },
-    {
-      icono: <Radio size={20} />,
-      titulo: "3. Listo",
-      texto: "Te dice si está o falta."
-    }
-  ];
-
-  return (
-    <section className="guide-strip">
-      {pasos.map((paso, index) => (
-        <div className="guide-pill" key={index}>
-          <div className="guide-icon">{paso.icono}</div>
-          <div>
-            <strong>{paso.titulo}</strong>
-            <small>{paso.texto}</small>
-          </div>
-        </div>
-      ))}
-    </section>
-  );
 }
 
 function App() {
@@ -160,7 +122,12 @@ function App() {
     return total + lista.length;
   }, 0);
 
-  const porcentajeGeneral = Math.round((totalConseguidas / totalFiguritas) * 100);
+  const totalFaltantes = totalFiguritas - totalConseguidas;
+
+  const porcentajeGeneral =
+    totalFiguritas > 0
+      ? Math.round((totalConseguidas / totalFiguritas) * 100)
+      : 0;
 
   const estadoVerificador = !resultado
     ? { clase: "idle", texto: "Listo para verificar" }
@@ -423,8 +390,6 @@ function App() {
             </div>
           </div>
 
-          <GuiaUso />
-
           <div className="auth-tabs">
             <button
               type="button"
@@ -496,7 +461,9 @@ function App() {
     const equipo = ALBUM[equipoActual];
     const numeros = crearNumeros(equipo.cantidadFiguritas);
     const conseguidas = estado.figuritas[equipo.id]?.length || 0;
-    const porcentajeEquipo = Math.round((conseguidas / equipo.cantidadFiguritas) * 100);
+    const porcentajeEquipo = Math.round(
+      (conseguidas / equipo.cantidadFiguritas) * 100
+    );
 
     return (
       <main className="app-shell screen-edit">
@@ -610,30 +577,12 @@ function App() {
 
       {errorGeneral && <div className="alert alert-warn">{errorGeneral}</div>}
 
-      <section className="score-card">
-        <div>
-          <span className="eyebrow">Mi colección</span>
-          <h2>{porcentajeGeneral}%</h2>
-          <p>
-            {totalConseguidas} de {totalFiguritas} cargadas.
-          </p>
-        </div>
-
-        <div className="hero-emblem">
-          <Trophy size={42} />
-        </div>
-      </section>
-
-      <GuiaUso />
-
       <section className="panel verifier-panel">
         <div className="verifier-topbar">
           <div>
             <span className="eyebrow">Verificador</span>
             <h2>Consultá una figurita</h2>
-            <p>
-              Elegí equipo y número. Después tocá el botón grande.
-            </p>
+            <p>Elegí equipo y número. Después tocá el botón grande.</p>
           </div>
 
           <button className="ghost compact-btn" onClick={volverACargaInicial}>
@@ -729,6 +678,35 @@ function App() {
             </div>
           </div>
         )}
+      </section>
+
+      <section className="score-card collection-card">
+        <div className="collection-main">
+          <span className="eyebrow">Mi colección</span>
+          <h2>{porcentajeGeneral}%</h2>
+          <p>Progreso general de tus figuritas.</p>
+        </div>
+
+        <div className="collection-stats">
+          <div className="collection-stat">
+            <span>Tenés</span>
+            <strong>{totalConseguidas}</strong>
+          </div>
+
+          <div className="collection-stat missing">
+            <span>Te faltan</span>
+            <strong>{totalFaltantes}</strong>
+          </div>
+
+          <div className="collection-stat total">
+            <span>Total</span>
+            <strong>{totalFiguritas}</strong>
+          </div>
+        </div>
+
+        <div className="hero-emblem">
+          <Trophy size={42} />
+        </div>
       </section>
 
       <section className="panel summary-panel">
