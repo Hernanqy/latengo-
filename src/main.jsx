@@ -1,6 +1,23 @@
 ﻿import React, { useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { Check, Search, LogOut, Save, User, RotateCcw } from "lucide-react";
+import {
+  Check,
+  Search,
+  LogOut,
+  Save,
+  User,
+  RotateCcw,
+  CheckCircle2,
+  ListChecks,
+  XCircle,
+  Trophy,
+  MapPinned,
+  ClipboardCheck,
+  CircleHelp,
+  Gamepad2,
+  Radio,
+  MonitorSpeaker
+} from "lucide-react";
 import { ALBUM } from "./data/album";
 import { supabase } from "./lib/supabase";
 import {
@@ -12,8 +29,59 @@ import {
 } from "./lib/database";
 import "./styles.css";
 
+const FIGURITAS_POR_PAGINA = 20;
+
 function crearNumeros(cantidad) {
   return Array.from({ length: cantidad }, (_, index) => index + 1);
+}
+
+function calcularPaginaEstimada(equipoId, numero) {
+  const indiceEquipo = ALBUM.findIndex((equipo) => equipo.id === equipoId);
+
+  if (indiceEquipo < 0 || !numero) return null;
+
+  const figuritasPrevias = ALBUM.slice(0, indiceEquipo).reduce(
+    (total, equipo) => total + equipo.cantidadFiguritas,
+    0
+  );
+
+  const posicionGlobal = figuritasPrevias + Number(numero);
+
+  return Math.ceil(posicionGlobal / FIGURITAS_POR_PAGINA);
+}
+
+function GuiaUso() {
+  const pasos = [
+    {
+      icono: <Gamepad2 size={18} />,
+      titulo: "Cargá",
+      texto: "Marcá solo las que ya tenés."
+    },
+    {
+      icono: <MonitorSpeaker size={18} />,
+      titulo: "Consultá",
+      texto: "Elegí equipo y número."
+    },
+    {
+      icono: <Radio size={18} />,
+      titulo: "Resolvé",
+      texto: "La app te dice si la tenés o te falta."
+    }
+  ];
+
+  return (
+    <section className="guide-strip">
+      {pasos.map((paso, index) => (
+        <div className="guide-pill" key={index}>
+          <div className="guide-icon">{paso.icono}</div>
+          <div>
+            <strong>{paso.titulo}</strong>
+            <small>{paso.texto}</small>
+          </div>
+        </div>
+      ))}
+    </section>
+  );
 }
 
 function App() {
@@ -90,6 +158,16 @@ function App() {
     const lista = estado.figuritas[equipo.id] || [];
     return total + lista.length;
   }, 0);
+
+  const porcentajeGeneral = Math.round((totalConseguidas / totalFiguritas) * 100);
+
+  const estadoVerificador = !resultado
+    ? { clase: "idle", texto: "Listo para verificar" }
+    : resultado.tipo === "ok"
+    ? { clase: "ok", texto: "Figurita encontrada" }
+    : resultado.tipo === "falta"
+    ? { clase: "falta", texto: "Falta en tu colección" }
+    : { clase: "error", texto: "Revisá los datos" };
 
   async function enviarAuth(evento) {
     evento.preventDefault();
@@ -205,7 +283,10 @@ function App() {
 
       setResultado({
         tipo: "ok",
-        texto: `Figurita ${numero} agregada.`
+        texto: "Ahora la tenés.",
+        equipo: equipoSeleccionado.nombre,
+        numero: Number(numero),
+        pagina: calcularPaginaEstimada(equipoId, numero)
       });
     } catch (error) {
       setErrorGeneral("No se pudo guardar.");
@@ -223,20 +304,31 @@ function App() {
     if (!numero || numero < 1 || numero > equipoSeleccionado.cantidadFiguritas) {
       setResultado({
         tipo: "error",
-        texto: `Ingresá un número válido.`
+        texto: "Ingresá un número válido.",
+        equipo: equipoSeleccionado.nombre,
+        numero: null,
+        pagina: null
       });
       return;
     }
 
+    const pagina = calcularPaginaEstimada(equipoSeleccionado.id, numero);
+
     if (tieneFigurita(equipoSeleccionado.id, numero)) {
       setResultado({
         tipo: "ok",
-        texto: `La tenés.`
+        texto: "La tenés.",
+        equipo: equipoSeleccionado.nombre,
+        numero,
+        pagina
       });
     } else {
       setResultado({
         tipo: "falta",
-        texto: `Te falta.`
+        texto: "Te falta.",
+        equipo: equipoSeleccionado.nombre,
+        numero,
+        pagina
       });
     }
   }
@@ -285,10 +377,13 @@ function App() {
 
   if (cargandoSesion) {
     return (
-      <main className="app-shell center-shell">
-        <section className="auth-card">
-          <div className="brand-mark">26</div>
-          <h1>Cargando...</h1>
+      <main className="app-shell center-shell screen-auth">
+        <section className="auth-card stadium-card">
+          <div className="brand-emblem">
+            <Trophy size={34} />
+          </div>
+          <h1>¿La tengo?</h1>
+          <p>Preparando tu colección...</p>
         </section>
       </main>
     );
@@ -296,15 +391,23 @@ function App() {
 
   if (!usuario) {
     return (
-      <main className="app-shell center-shell">
-        <section className="auth-card">
+      <main className="app-shell center-shell screen-auth">
+        <section className="auth-card stadium-card">
           <div className="brand-banner">
-            <div className="brand-mark">26</div>
+            <div className="brand-emblem">
+              <Trophy size={34} />
+            </div>
+
             <div>
-              <span className="eyebrow">ÁLBUM DIGITAL</span>
-              <h1>Mundial 2026</h1>
+              <span className="eyebrow">MUNDIAL 2026</span>
+              <h1>¿La tengo?</h1>
+              <p className="intro-text">
+                Controlá qué figuritas tenés y cuáles te faltan.
+              </p>
             </div>
           </div>
+
+          <GuiaUso />
 
           <div className="auth-tabs">
             <button
@@ -315,7 +418,7 @@ function App() {
                 setMensajeAuth("");
               }}
             >
-              Entrar
+              Ingresar
             </button>
 
             <button
@@ -326,7 +429,7 @@ function App() {
                 setMensajeAuth("");
               }}
             >
-              Crear cuenta
+              Registrarse
             </button>
           </div>
 
@@ -349,7 +452,7 @@ function App() {
 
             <button type="submit" className="primary-btn">
               <User size={18} />
-              "Continuar"
+              Continuar
             </button>
           </form>
 
@@ -361,10 +464,13 @@ function App() {
 
   if (cargandoDatos) {
     return (
-      <main className="app-shell center-shell">
-        <section className="auth-card">
-          <div className="brand-mark">26</div>
-          <h1>Cargando álbum...</h1>
+      <main className="app-shell center-shell screen-auth">
+        <section className="auth-card stadium-card">
+          <div className="brand-emblem">
+            <Trophy size={34} />
+          </div>
+          <h1>¿La tengo?</h1>
+          <p>Cargando tus figuritas...</p>
         </section>
       </main>
     );
@@ -374,13 +480,15 @@ function App() {
     const equipo = ALBUM[equipoActual];
     const numeros = crearNumeros(equipo.cantidadFiguritas);
     const conseguidas = estado.figuritas[equipo.id]?.length || 0;
+    const porcentajeEquipo = Math.round((conseguidas / equipo.cantidadFiguritas) * 100);
 
     return (
-      <main className="app-shell">
-        <header className="topbar">
-          <div className="topbar-brand">
-            <span className="eyebrow">ÁLBUM DIGITAL</span>
-            <strong>Mundial 2026</strong>
+      <main className="app-shell screen-edit">
+        <header className="app-header">
+          <div>
+            <span className="eyebrow">MODO CARGA</span>
+            <h1>Marcá las que tenés</h1>
+            <p>Esta zona es para editar tu colección.</p>
           </div>
 
           <button className="ghost compact-btn" onClick={salir}>
@@ -391,10 +499,10 @@ function App() {
 
         {errorGeneral && <div className="alert alert-warn">{errorGeneral}</div>}
 
-        <section className="card featured-card">
+        <section className="mode-panel edit-panel">
           <div className="section-header">
             <div>
-              <span className="eyebrow">CARGA INICIAL</span>
+              <span className="eyebrow">SELECCIÓN</span>
               <h2>{equipo.nombre}</h2>
               <div className="meta-row">
                 {equipo.grupo && <span className="tag">{equipo.grupo}</span>}
@@ -404,14 +512,15 @@ function App() {
               </div>
             </div>
 
-            <div className="step-badge">
-              {equipoActual + 1}/{ALBUM.length}
+            <div className="circle-progress">
+              <strong>{porcentajeEquipo}%</strong>
+              <small>{equipoActual + 1}/{ALBUM.length}</small>
             </div>
           </div>
 
           <div className="progress">
             <div
-              className="progress-fill"
+              className="progress-fill edit-fill"
               style={{
                 width: `${((equipoActual + 1) / ALBUM.length) * 100}%`
               }}
@@ -447,14 +556,14 @@ function App() {
 
             {equipoActual < ALBUM.length - 1 ? (
               <button
-                className="primary-btn"
+                className="primary-btn edit-btn"
                 onClick={() => setEquipoActual((actual) => actual + 1)}
               >
                 Siguiente
               </button>
             ) : (
               <button
-                className="primary-btn"
+                className="primary-btn edit-btn"
                 onClick={terminarCargaInicial}
                 disabled={guardando}
               >
@@ -469,11 +578,12 @@ function App() {
   }
 
   return (
-    <main className="app-shell">
-      <header className="topbar">
-        <div className="topbar-brand">
-          <span className="eyebrow">ÁLBUM DIGITAL</span>
-          <strong>Mundial 2026</strong>
+    <main className="app-shell screen-check">
+      <header className="app-header">
+        <div>
+          <span className="eyebrow">MODO CONSULTA</span>
+          <h1>¿La tengo?</h1>
+          <p>Buscá una figurita y resolvelo al instante.</p>
         </div>
 
         <button className="ghost compact-btn" onClick={salir}>
@@ -484,84 +594,125 @@ function App() {
 
       {errorGeneral && <div className="alert alert-warn">{errorGeneral}</div>}
 
-      <section className="hero-card">
+      <section className="score-hero">
         <div>
-          <span className="eyebrow">VERIFICADOR</span>
-          <h1>Comprobar figurita</h1>
-          <p className="hero-stat">
-            {totalConseguidas} / {totalFiguritas}
+          <span className="eyebrow">MI COLECCIÓN</span>
+          <h2>{porcentajeGeneral}% completa</h2>
+          <p>
+            {totalConseguidas} de {totalFiguritas} figuritas cargadas.
           </p>
+        </div>
+
+        <div className="hero-ball">
+          <Trophy size={44} />
         </div>
       </section>
 
-      <section className="card">
-        <form onSubmit={verificarFigurita} className="form">
-          <label>Equipo</label>
-          <select
-            value={equipoConsulta}
-            onChange={(evento) => {
-              setEquipoConsulta(evento.target.value);
-              setResultado(null);
-            }}
-          >
-            {ALBUM.map((equipo) => (
-              <option key={equipo.id} value={equipo.id}>
-                {equipo.nombre}
-              </option>
-            ))}
-          </select>
+      <GuiaUso />
 
-          <label>Número</label>
-          <input
-            type="number"
-            min="1"
-            max={equipoSeleccionado.cantidadFiguritas}
-            value={numeroConsulta}
-            onChange={(evento) => {
-              setNumeroConsulta(evento.target.value);
-              setResultado(null);
-            }}
-            placeholder={`1 a ${equipoSeleccionado.cantidadFiguritas}`}
-          />
-
-          <button type="submit" className="primary-btn">
-            <Search size={18} />
-            Verificar
-          </button>
-        </form>
-
-        {resultado && (
-          <div className={`alert alert-${resultado.tipo}`}>
-            <div className="result-line">
-              <strong>{resultado.texto}</strong>
-            </div>
-
-            {resultado.tipo === "falta" && (
-              <button
-                className="primary-btn inline-btn"
-                disabled={guardando}
-                onClick={() =>
-                  marcarComoConseguida(equipoSeleccionado.id, numeroConsulta)
-                }
-              >
-                Marcar como conseguida
-              </button>
-            )}
-          </div>
-        )}
-      </section>
-
-      <section className="card">
-        <div className="section-header small-gap">
+      <section className="mode-panel check-panel verifier-panel">
+        <div className="verifier-topbar">
           <div>
-            <span className="eyebrow">RESUMEN</span>
-            <h2>Mis equipos</h2>
+            <span className="eyebrow verifier-eyebrow">VERIFICADOR</span>
+            <h2>Consultá una figurita</h2>
+            <p className="verifier-subtext">
+              Elegí equipo y número. La respuesta aparece al instante.
+            </p>
           </div>
 
           <button className="ghost compact-btn" onClick={volverACargaInicial}>
             <RotateCcw size={16} />
             Editar
           </button>
+        </div>
+
+        <div className="verifier-status">
+          <span className={`status-dot status-${estadoVerificador.clase}`}></span>
+          <span>{estadoVerificador.texto}</span>
+        </div>
+
+        <div className="verifier-card">
+          <form onSubmit={verificarFigurita} className="form verifier-form">
+            <label>Equipo</label>
+            <select
+              value={equipoConsulta}
+              onChange={(evento) => {
+                setEquipoConsulta(evento.target.value);
+                setResultado(null);
+              }}
+            >
+              {ALBUM.map((equipo) => (
+                <option key={equipo.id} value={equipo.id}>
+                  {equipo.nombre}
+                </option>
+              ))}
+            </select>
+
+            <label>Número</label>
+            <input
+              type="number"
+              min="1"
+              max={equipoSeleccionado.cantidadFiguritas}
+              value={numeroConsulta}
+              onChange={(evento) => {
+                setNumeroConsulta(evento.target.value);
+                setResultado(null);
+              }}
+              placeholder={`1 a ${equipoSeleccionado.cantidadFiguritas}`}
+            />
+
+            <button type="submit" className="primary-btn check-btn verify-btn">
+              <Search size={18} />
+              Verificar ahora
+            </button>
+          </form>
+        </div>
+
+        {resultado && (
+          <div className={`result-card result-${resultado.tipo} verifier-result`}>
+            <div className="result-icon">
+              {resultado.tipo === "ok" && <CheckCircle2 size={42} />}
+              {resultado.tipo === "falta" && <XCircle size={42} />}
+              {resultado.tipo === "error" && <CircleHelp size={42} />}
+            </div>
+
+            <div className="result-content">
+              <span>
+                {resultado.equipo}
+                {resultado.numero ? ` · Nº ${resultado.numero}` : ""}
+              </span>
+
+              <strong>{resultado.texto}</strong>
+
+              {resultado.pagina && (
+                <div className="page-chip">
+                  <MapPinned size={16} />
+                  Página estimada para pegarla: <b>{resultado.pagina}</b>
+                </div>
+              )}
+
+              {resultado.tipo === "falta" && (
+                <button
+                  className="primary-btn inline-btn"
+                  disabled={guardando}
+                  onClick={() =>
+                    marcarComoConseguida(equipoSeleccionado.id, numeroConsulta)
+                  }
+                >
+                  Marcar como conseguida
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+      </section>
+
+      <section className="mode-panel summary-panel">
+        <div className="section-header small-gap">
+          <div>
+            <span className="eyebrow">RESUMEN</span>
+            <h2>Mis equipos</h2>
+          </div>
         </div>
 
         <div className="team-list">
@@ -587,4 +738,3 @@ function App() {
 }
 
 createRoot(document.getElementById("root")).render(<App />);
-
