@@ -8,7 +8,6 @@ import {
   User,
   RotateCcw,
   CheckCircle2,
-  ListChecks,
   XCircle,
   Trophy,
   MapPinned,
@@ -16,7 +15,9 @@ import {
   CircleHelp,
   Gamepad2,
   Radio,
-  MonitorSpeaker
+  MonitorSpeaker,
+  Minus,
+  Plus
 } from "lucide-react";
 import { ALBUM } from "./data/album";
 import { supabase } from "./lib/supabase";
@@ -53,19 +54,19 @@ function calcularPaginaEstimada(equipoId, numero) {
 function GuiaUso() {
   const pasos = [
     {
-      icono: <Gamepad2 size={18} />,
-      titulo: "Cargá",
-      texto: "Marcá solo las que ya tenés."
+      icono: <Gamepad2 size={20} />,
+      titulo: "1. Cargá",
+      texto: "Tocá las que ya tenés."
     },
     {
-      icono: <MonitorSpeaker size={18} />,
-      titulo: "Consultá",
+      icono: <MonitorSpeaker size={20} />,
+      titulo: "2. Consultá",
       texto: "Elegí equipo y número."
     },
     {
-      icono: <Radio size={18} />,
-      titulo: "Resolvé",
-      texto: "La app te dice si la tenés o te falta."
+      icono: <Radio size={20} />,
+      titulo: "3. Listo",
+      texto: "Te dice si está o falta."
     }
   ];
 
@@ -304,7 +305,7 @@ function App() {
     if (!numero || numero < 1 || numero > equipoSeleccionado.cantidadFiguritas) {
       setResultado({
         tipo: "error",
-        texto: "Ingresá un número válido.",
+        texto: "Número inválido.",
         equipo: equipoSeleccionado.nombre,
         numero: null,
         pagina: null
@@ -331,6 +332,21 @@ function App() {
         pagina
       });
     }
+  }
+
+  function bajarNumero() {
+    const actual = Number(numeroConsulta) || 1;
+    const nuevo = Math.max(1, actual - 1);
+    setNumeroConsulta(String(nuevo));
+    setResultado(null);
+  }
+
+  function subirNumero() {
+    const actual = Number(numeroConsulta) || 0;
+    const maximo = equipoSeleccionado.cantidadFiguritas;
+    const nuevo = Math.min(maximo, actual + 1);
+    setNumeroConsulta(String(nuevo));
+    setResultado(null);
   }
 
   async function terminarCargaInicial() {
@@ -378,7 +394,7 @@ function App() {
   if (cargandoSesion) {
     return (
       <main className="app-shell center-shell screen-auth">
-        <section className="auth-card stadium-card">
+        <section className="auth-card">
           <div className="brand-emblem">
             <Trophy size={34} />
           </div>
@@ -392,14 +408,14 @@ function App() {
   if (!usuario) {
     return (
       <main className="app-shell center-shell screen-auth">
-        <section className="auth-card stadium-card">
+        <section className="auth-card">
           <div className="brand-banner">
             <div className="brand-emblem">
               <Trophy size={34} />
             </div>
 
             <div>
-              <span className="eyebrow">MUNDIAL 2026</span>
+              <span className="eyebrow">Mundial 2026</span>
               <h1>¿La tengo?</h1>
               <p className="intro-text">
                 Controlá qué figuritas tenés y cuáles te faltan.
@@ -451,7 +467,7 @@ function App() {
             />
 
             <button type="submit" className="primary-btn">
-              <User size={18} />
+              <User size={20} />
               Continuar
             </button>
           </form>
@@ -465,7 +481,7 @@ function App() {
   if (cargandoDatos) {
     return (
       <main className="app-shell center-shell screen-auth">
-        <section className="auth-card stadium-card">
+        <section className="auth-card">
           <div className="brand-emblem">
             <Trophy size={34} />
           </div>
@@ -486,23 +502,23 @@ function App() {
       <main className="app-shell screen-edit">
         <header className="app-header">
           <div>
-            <span className="eyebrow">MODO CARGA</span>
+            <span className="eyebrow">Modo carga</span>
             <h1>Marcá las que tenés</h1>
-            <p>Esta zona es para editar tu colección.</p>
+            <p>Tocá solamente las figuritas que ya tenés.</p>
           </div>
 
           <button className="ghost compact-btn" onClick={salir}>
-            <LogOut size={16} />
+            <LogOut size={18} />
             Salir
           </button>
         </header>
 
         {errorGeneral && <div className="alert alert-warn">{errorGeneral}</div>}
 
-        <section className="mode-panel edit-panel">
+        <section className="panel edit-panel">
           <div className="section-header">
             <div>
-              <span className="eyebrow">SELECCIÓN</span>
+              <span className="eyebrow">Selección</span>
               <h2>{equipo.nombre}</h2>
               <div className="meta-row">
                 {equipo.grupo && <span className="tag">{equipo.grupo}</span>}
@@ -520,14 +536,14 @@ function App() {
 
           <div className="progress">
             <div
-              className="progress-fill edit-fill"
+              className="progress-fill"
               style={{
                 width: `${((equipoActual + 1) / ALBUM.length) * 100}%`
               }}
             />
           </div>
 
-          <div className="grid stickers-grid">
+          <div className="stickers-grid">
             {numeros.map((numero) => {
               const activa = tieneFigurita(equipo.id, numero);
 
@@ -539,7 +555,7 @@ function App() {
                   onClick={() => alternarFigurita(equipo.id, numero)}
                 >
                   <span>{numero}</span>
-                  {activa && <Check size={16} />}
+                  {activa && <Check size={18} />}
                 </button>
               );
             })}
@@ -556,18 +572,18 @@ function App() {
 
             {equipoActual < ALBUM.length - 1 ? (
               <button
-                className="primary-btn edit-btn"
+                className="primary-btn"
                 onClick={() => setEquipoActual((actual) => actual + 1)}
               >
                 Siguiente
               </button>
             ) : (
               <button
-                className="primary-btn edit-btn"
+                className="primary-btn"
                 onClick={terminarCargaInicial}
                 disabled={guardando}
               >
-                <Save size={18} />
+                <Save size={20} />
                 Finalizar
               </button>
             )}
@@ -581,47 +597,47 @@ function App() {
     <main className="app-shell screen-check">
       <header className="app-header">
         <div>
-          <span className="eyebrow">MODO CONSULTA</span>
+          <span className="eyebrow">Modo consulta</span>
           <h1>¿La tengo?</h1>
           <p>Buscá una figurita y resolvelo al instante.</p>
         </div>
 
         <button className="ghost compact-btn" onClick={salir}>
-          <LogOut size={16} />
+          <LogOut size={18} />
           Salir
         </button>
       </header>
 
       {errorGeneral && <div className="alert alert-warn">{errorGeneral}</div>}
 
-      <section className="score-hero">
+      <section className="score-card">
         <div>
-          <span className="eyebrow">MI COLECCIÓN</span>
-          <h2>{porcentajeGeneral}% completa</h2>
+          <span className="eyebrow">Mi colección</span>
+          <h2>{porcentajeGeneral}%</h2>
           <p>
-            {totalConseguidas} de {totalFiguritas} figuritas cargadas.
+            {totalConseguidas} de {totalFiguritas} cargadas.
           </p>
         </div>
 
-        <div className="hero-ball">
-          <Trophy size={44} />
+        <div className="hero-emblem">
+          <Trophy size={42} />
         </div>
       </section>
 
       <GuiaUso />
 
-      <section className="mode-panel check-panel verifier-panel">
+      <section className="panel verifier-panel">
         <div className="verifier-topbar">
           <div>
-            <span className="eyebrow verifier-eyebrow">VERIFICADOR</span>
+            <span className="eyebrow">Verificador</span>
             <h2>Consultá una figurita</h2>
-            <p className="verifier-subtext">
-              Elegí equipo y número. La respuesta aparece al instante.
+            <p>
+              Elegí equipo y número. Después tocá el botón grande.
             </p>
           </div>
 
           <button className="ghost compact-btn" onClick={volverACargaInicial}>
-            <RotateCcw size={16} />
+            <RotateCcw size={18} />
             Editar
           </button>
         </div>
@@ -631,24 +647,29 @@ function App() {
           <span>{estadoVerificador.texto}</span>
         </div>
 
-        <div className="verifier-card">
-          <form onSubmit={verificarFigurita} className="form verifier-form">
-            <label>Equipo</label>
-            <select
-              value={equipoConsulta}
-              onChange={(evento) => {
-                setEquipoConsulta(evento.target.value);
-                setResultado(null);
-              }}
-            >
-              {ALBUM.map((equipo) => (
-                <option key={equipo.id} value={equipo.id}>
-                  {equipo.nombre}
-                </option>
-              ))}
-            </select>
+        <form onSubmit={verificarFigurita} className="verifier-form">
+          <label>Equipo</label>
+          <select
+            value={equipoConsulta}
+            onChange={(evento) => {
+              setEquipoConsulta(evento.target.value);
+              setResultado(null);
+              setNumeroConsulta("");
+            }}
+          >
+            {ALBUM.map((equipo) => (
+              <option key={equipo.id} value={equipo.id}>
+                {equipo.nombre}
+              </option>
+            ))}
+          </select>
 
-            <label>Número</label>
+          <label>Número</label>
+          <div className="number-control">
+            <button type="button" className="round-btn" onClick={bajarNumero}>
+              <Minus size={20} />
+            </button>
+
             <input
               type="number"
               min="1"
@@ -661,15 +682,18 @@ function App() {
               placeholder={`1 a ${equipoSeleccionado.cantidadFiguritas}`}
             />
 
-            <button type="submit" className="primary-btn check-btn verify-btn">
-              <Search size={18} />
-              Verificar ahora
+            <button type="button" className="round-btn" onClick={subirNumero}>
+              <Plus size={20} />
             </button>
-          </form>
-        </div>
+          </div>
+
+          <button type="submit" className="tap-btn">
+            <span>VERIFICAR</span>
+          </button>
+        </form>
 
         {resultado && (
-          <div className={`result-card result-${resultado.tipo} verifier-result`}>
+          <div className={`result-card result-${resultado.tipo}`}>
             <div className="result-icon">
               {resultado.tipo === "ok" && <CheckCircle2 size={42} />}
               {resultado.tipo === "falta" && <XCircle size={42} />}
@@ -687,13 +711,13 @@ function App() {
               {resultado.pagina && (
                 <div className="page-chip">
                   <MapPinned size={16} />
-                  Página estimada para pegarla: <b>{resultado.pagina}</b>
+                  Página estimada: <b>{resultado.pagina}</b>
                 </div>
               )}
 
               {resultado.tipo === "falta" && (
                 <button
-                  className="primary-btn inline-btn"
+                  className="secondary-action"
                   disabled={guardando}
                   onClick={() =>
                     marcarComoConseguida(equipoSeleccionado.id, numeroConsulta)
@@ -707,10 +731,10 @@ function App() {
         )}
       </section>
 
-      <section className="mode-panel summary-panel">
+      <section className="panel summary-panel">
         <div className="section-header small-gap">
           <div>
-            <span className="eyebrow">RESUMEN</span>
+            <span className="eyebrow">Resumen</span>
             <h2>Mis equipos</h2>
           </div>
         </div>
