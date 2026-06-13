@@ -9,7 +9,6 @@ import {
   RotateCcw,
   CheckCircle2,
   XCircle,
-  Trophy,
   MapPinned,
   CircleHelp,
   Minus,
@@ -26,25 +25,19 @@ import {
 } from "./lib/database";
 import "./styles.css";
 
-const FIGURITAS_POR_PAGINA = 20;
-
 function crearNumeros(cantidad) {
   return Array.from({ length: cantidad }, (_, index) => index + 1);
 }
-
-function calcularPaginaEstimada(equipoId, numero) {
-  const indiceEquipo = ALBUM.findIndex((equipo) => equipo.id === equipoId);
-
-  if (indiceEquipo < 0 || !numero) return null;
-
-  const figuritasPrevias = ALBUM.slice(0, indiceEquipo).reduce(
-    (total, equipo) => total + equipo.cantidadFiguritas,
-    0
+function LegalNotice() {
+  return (
+    <div className="legal-notice">
+      <strong>App independiente.</strong>
+      <span>
+        No está afiliada, patrocinada ni autorizada por FIFA, Panini ni ninguna entidad oficial.
+        Es una herramienta personal para organizar colecciones de figuritas.
+      </span>
+    </div>
   );
-
-  const posicionGlobal = figuritasPrevias + Number(numero);
-
-  return Math.ceil(posicionGlobal / FIGURITAS_POR_PAGINA);
 }
 
 function App() {
@@ -254,7 +247,6 @@ function App() {
         texto: "Ahora la tenés.",
         equipo: equipoSeleccionado.nombre,
         numero: Number(numero),
-        pagina: calcularPaginaEstimada(equipoId, numero)
       });
     } catch (error) {
       setErrorGeneral("No se pudo guardar.");
@@ -275,14 +267,10 @@ function App() {
         texto: "Número inválido.",
         equipo: equipoSeleccionado.nombre,
         numero: null,
-        pagina: null
       });
       return;
     }
-
-    const pagina = calcularPaginaEstimada(equipoSeleccionado.id, numero);
-
-    if (tieneFigurita(equipoSeleccionado.id, numero)) {
+if (tieneFigurita(equipoSeleccionado.id, numero)) {
       setResultado({
         tipo: "ok",
         texto: "La tenés.",
@@ -363,7 +351,7 @@ function App() {
       <main className="app-shell center-shell screen-auth">
         <section className="auth-card">
           <div className="brand-emblem">
-            <Trophy size={34} />
+            <CheckCircle2 size={34} />
           </div>
           <h1>¿La tengo?</h1>
           <p>Preparando tu colección...</p>
@@ -378,43 +366,49 @@ function App() {
         <section className="auth-card">
           <div className="brand-banner">
             <div className="brand-emblem">
-              <Trophy size={34} />
+              <CheckCircle2 size={34} />
             </div>
 
             <div>
-              <span className="eyebrow">Mundial 2026</span>
+              <span className="eyebrow">Figuritas de fútbol</span>
               <h1>¿La tengo?</h1>
               <p className="intro-text">
-                Controlá qué figuritas tenés y cuáles te faltan.
+                Controlá tus figuritas: las que tenés y las que te faltan.
               </p>
             </div>
           </div>
-
-          <div className="auth-tabs">
-            <button
-              type="button"
-              className={modoAuth === "login" ? "active-tab" : "ghost"}
-              onClick={() => {
-                setModoAuth("login");
-                setMensajeAuth("");
-              }}
-            >
-              Ingresar
-            </button>
-
-            <button
-              type="button"
-              className={modoAuth === "registro" ? "active-tab" : "ghost"}
-              onClick={() => {
-                setModoAuth("registro");
-                setMensajeAuth("");
-              }}
-            >
-              Registrarse
-            </button>
+          <div className="auth-helper">
+            {modoAuth === "login" ? (
+              <>
+                <span>¿Primera vez?</span>
+                <button
+                  type="button"
+                  className="link-btn"
+                  onClick={() => {
+                    setModoAuth("registro");
+                    setMensajeAuth("");
+                  }}
+                >
+                  Crear cuenta
+                </button>
+              </>
+            ) : (
+              <>
+                <span>¿Ya tenés cuenta?</span>
+                <button
+                  type="button"
+                  className="link-btn"
+                  onClick={() => {
+                    setModoAuth("login");
+                    setMensajeAuth("");
+                  }}
+                >
+                  Entrar
+                </button>
+              </>
+            )}
           </div>
-
-          <form onSubmit={enviarAuth} className="form">
+<form onSubmit={enviarAuth} className="form">
             <label>Email</label>
             <input
               type="email"
@@ -433,11 +427,13 @@ function App() {
 
             <button type="submit" className="primary-btn">
               <User size={20} />
-              Continuar
+              {modoAuth === "login" ? "Entrar a mi colección" : "Crear mi cuenta"}
             </button>
           </form>
 
           {mensajeAuth && <div className="alert alert-warn">{mensajeAuth}</div>}
+
+          <LegalNotice />
         </section>
       </main>
     );
@@ -448,7 +444,7 @@ function App() {
       <main className="app-shell center-shell screen-auth">
         <section className="auth-card">
           <div className="brand-emblem">
-            <Trophy size={34} />
+            <CheckCircle2 size={34} />
           </div>
           <h1>¿La tengo?</h1>
           <p>Cargando tus figuritas...</p>
@@ -657,13 +653,6 @@ function App() {
 
               <strong>{resultado.texto}</strong>
 
-              {resultado.pagina && (
-                <div className="page-chip">
-                  <MapPinned size={16} />
-                  Página estimada: <b>{resultado.pagina}</b>
-                </div>
-              )}
-
               {resultado.tipo === "falta" && (
                 <button
                   className="secondary-action"
@@ -705,9 +694,11 @@ function App() {
         </div>
 
         <div className="hero-emblem">
-          <Trophy size={42} />
+          <CheckCircle2 size={42} />
         </div>
       </section>
+
+      <LegalNotice />
 
       <section className="panel summary-panel">
         <div className="section-header small-gap">
@@ -740,3 +731,7 @@ function App() {
 }
 
 createRoot(document.getElementById("root")).render(<App />);
+
+
+
+

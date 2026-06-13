@@ -582,18 +582,6 @@ h2 {
   margin-bottom: 10px;
 }
 
-.page-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 12px;
-  border-radius: 14px;
-  background: rgba(0,0,0,0.20);
-  color: var(--cream);
-  font-weight: 900;
-  margin-bottom: 10px;
-}
-
 .secondary-action {
   min-height: 48px;
   padding: 10px 14px;
@@ -934,4 +922,121 @@ h2 {
   .tap-btn::before {
     inset: -17px !important;
   }
+}
+
+/* ===== AJUSTES LEGALES / MARCA PROPIA ===== */
+
+.legal-notice {
+  margin-top: 16px;
+  padding: 13px 14px;
+  border-radius: 18px;
+  background: #202529;
+  color: var(--soft);
+  font-size: 0.78rem;
+  line-height: 1.35;
+  box-shadow:
+    inset 3px 3px 8px rgba(0,0,0,0.30),
+    inset -3px -3px 8px rgba(255,255,255,0.04);
+}
+
+.legal-notice strong {
+  display: block;
+  color: var(--cream);
+  font-size: 0.82rem;
+  margin-bottom: 4px;
+}
+
+.legal-notice span {
+  display: block;
+}
+
+/* Evitamos que el ícono parezca trofeo oficial: estilo genérico */
+.brand-emblem,
+.hero-emblem,
+.result-icon {
+  background: linear-gradient(145deg, #e9c78f, #9f6128);
+}
+
+.brand-emblem svg,
+.hero-emblem svg,
+.result-icon svg {
+  stroke-width: 2.6;
+}
+
+/* Ajuste de textos preventivos */
+@media (max-width: 640px) {
+  .legal-notice {
+    font-size: 0.72rem;
+  }
+}
+
+
+/* ===== LOGIN MÁS CLARO ===== */
+
+.auth-tabs button {
+  font-size: 0.86rem;
+  line-height: 1.1;
+}
+
+.auth-tabs .active-tab {
+  color: #1c1f21 !important;
+}
+
+.auth-tabs .ghost {
+  color: var(--soft) !important;
+}
+
+.form .primary-btn {
+  margin-top: 8px;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 420px) {
+  .auth-tabs button {
+    font-size: 0.78rem;
+    padding-left: 6px;
+    padding-right: 6px;
+  }
+
+  .form .primary-btn {
+    font-size: 0.86rem;
+  }
+}
+
+/* ===== LOGIN MÁS CLARO: SIN BOTÓN INGRESAR ARRIBA ===== */
+
+.auth-helper {
+  margin: 16px 0 18px;
+  padding: 12px 14px;
+  border-radius: 18px;
+  background: #202529;
+  color: var(--soft);
+  font-size: 0.92rem;
+  font-weight: 850;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  box-shadow:
+    inset 3px 3px 8px rgba(0,0,0,0.30),
+    inset -3px -3px 8px rgba(255,255,255,0.04);
+}
+
+.link-btn {
+  background: transparent;
+  color: var(--orange);
+  font-weight: 950;
+  padding: 0;
+  min-height: auto;
+  text-decoration: underline;
+  box-shadow: none;
+}
+
+.link-btn:hover {
+  transform: none;
+  filter: brightness(1.15);
+}
+
+.form .primary-btn {
+  margin-top: 10px;
 }
